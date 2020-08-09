@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pages</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#pages').submit(function(e){
+            e.preventDefault()
+            $.ajax({
+            url: '/pages/next_table/{{id}}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(serverResponse){
+              $('#table').html(serverResponse)
+            }
+            })
+              $(this).trigger('reset')
+            })
+
+              $('a').click(function(e){
+                e.preventDefault()
+            $.ajax({
+            url: `/pages/change_page/${$(this).attr('id')}`,
+            method: 'GET',
+            success: function(serverResponse){
+              console.log(serverResponse)
+              $('#table').html(serverResponse)
+            }
+            })
+              $(this).trigger('reset')
+            })
+        });
+    </script>
+</head>
+<body>
+
+    <h1>Pagination</h1>
+
+    <form action="new_entry" id="pages" method="POST">
+    {% csrf_token %} 
+        <p>First Name:</p>
+        <input type="text" name="first_name" placeholder="Enter First Name">
+        <p>Last Name:</p>
+        <input type="text" name="last_name" placeholder="Enter First Name">
+        <p>From:</p>
+        <input type="date" name="from_date">
+        <p>Date:</p>
+        <input type="date" name="to_date">
+        <p>Email</p>
+        <input type="email" name="email" placeholder="Enter Email"><br><br>
+        <input type="submit" value="Generate!">
+
+    </form><br><br>
+
+    <a id='1' href="change_page/1" >1</a> | <a id='2' href="change_page/2">2</a> | <a id='3' href="change_page/3">3</a><br><br>
+
+    <table id="table">
+        <tr>
+          <th>id</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Registered Date</th>
+          <th>Email</th>
+        </tr>
+        {% for lead in all_leads %}
+        <tr>
+          <td>{{lead.id}}</td>
+          <td>{{lead.first_name}}</td>
+          <td>{{lead.last_name}}</td>
+          <td>{{lead.created_at}}</td>
+          <td>{{lead.email}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    
+</body>
+</html>
